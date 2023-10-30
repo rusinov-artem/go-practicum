@@ -9,6 +9,18 @@ import (
 	"strconv"
 )
 
+// Алгоритм описан в задаче
+// https://contest.yandex.ru/contest/22781/problems/B/
+// Корректность решения продемонстрирована
+// тестами в фалйе code_test.go
+//
+// Алгоритмическая сложность линейная O(n) где n - количество
+// чисел над которыми должны быть выполнены операции
+//
+// Пространственная сложность тоже линейная O(n) где n -
+// количество чисел над которыми выполняются операции. В худшем
+// случае в стеке придется держать все числа
+
 func main() {
 	sc := bufio.NewScanner(os.Stdin)
 	sc.Buffer(make([]byte, 0, 10000), 0)
@@ -76,30 +88,30 @@ func (t *Expression) Result() int {
 }
 
 func (t *Expression) Sum() {
-	v2, _ := t.stack.Pop()
-	v1, _ := t.stack.Pop()
-	t.stack.Push(v1 + v2)
+	t.update(func(v1, v2 int) int { return v1 + v2 })
 }
 
 func (t *Expression) Mult() {
-	v2, _ := t.stack.Pop()
-	v1, _ := t.stack.Pop()
-	t.stack.Push(v1 * v2)
-}
-
-func (t *Expression) Div() {
-	v2, _ := t.stack.Pop()
-	v1, _ := t.stack.Pop()
-	res := float64(v1)/float64(v2)
-	if res > 0 {
-		t.stack.Push(int(math.Trunc(res)))
-	} else {
-		t.stack.Push(int(math.Floor(res)))
-	}
+	t.update(func(v1, v2 int) int { return v1 * v2 })
 }
 
 func (t *Expression) Sub() {
+	t.update(func(v1, v2 int) int { return v1 - v2 })
+}
+
+func (t *Expression) Div() {
+	t.update(func(v1,v2 int)int {
+		res := float64(v1) / float64(v2)
+		if res > 0 {
+			return int(math.Trunc(res))
+		} else {
+			return int(math.Floor(res))
+		}
+	})
+}
+
+func (t *Expression) update(op func(v1, v2 int) int) {
 	v2, _ := t.stack.Pop()
 	v1, _ := t.stack.Pop()
-	t.stack.Push(v1 - v2)
+	t.stack.Push(op(v1, v2))
 }

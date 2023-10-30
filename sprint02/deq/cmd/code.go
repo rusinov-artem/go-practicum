@@ -8,6 +8,20 @@ import (
 	"strconv"
 )
 
+// Дек сделан с помощью массива и 2х индексов
+// индекс headIndex указывает на первый элемент
+// индекс end указывает на элемент за последним
+// при добавлении в начало двигается индекс begin
+// при добавление в конец двигается индекс end
+//
+// Алгоритмическая сложность всех операций O(1)
+// Время выполнения операций над стеком не зависит от 
+// количества элементов содержащихся в стеке
+//
+// Пространственная сложность составляет O(n)
+// Количество памяти необходимой для хранения элементов стека
+// прямо пропорционально количеству элементов в стеке
+
 func main() {
 	var n int
 	var c int
@@ -22,42 +36,39 @@ func main() {
 		if cmd == "push_back" {
 			sc.Scan()
 			val, _ := strconv.Atoi(sc.Text())
-			err := dq.PushBack(val)
-			if err != nil {
-				fmt.Println("error")
-			}
+			handlePushError(dq.PushBack(val))
 		} else if cmd == "push_front" {
 			sc.Scan()
 			val, _ := strconv.Atoi(sc.Text())
-			err := dq.PushFront(val)
-			if err != nil {
-				fmt.Println("error")
-			}
+			handlePushError(dq.PushFront(val))
 		} else if cmd == "pop_back" {
-			val, err := dq.PopBack()
-			if err != nil {
-				fmt.Println("error")
-				continue
-			}
-			fmt.Println(val)
+			handlePopResult(dq.PopBack())
 		} else if cmd == "pop_front" {
-			val, err := dq.PopFront()
-			if err != nil {
-				fmt.Println("error")
-				continue
-			}
-			fmt.Println(val)
+			handlePopResult(dq.PopFront())
 		}
 	}
+}
 
+func handlePushError(err error) {
+	if err != nil {
+		fmt.Println("error")
+	}
+}
+
+func handlePopResult(val int, err error) {
+	if err != nil {
+		fmt.Println("error")
+		return
+	}
+	fmt.Println(val)
 }
 
 type Deq struct {
-	capacity int
-	size     int
-	data     []int
-	begin    int
-	end      int
+	capacity  int
+	size      int
+	data      []int
+	begin int
+	end int
 }
 
 func NewDeq(capacity int) *Deq {
@@ -78,24 +89,15 @@ func (t *Deq) PushBack(v int) error {
 	return nil
 }
 
-func (t *Deq) PushFront(v int) error {
-	if t.size+1 > t.capacity {
-		return errors.New("overflow")
-	}
+func (t *Deq) PopFront() (int, error) {
 	if t.size == 0 {
-		t.begin=0
-		t.end = 1
-		t.size=1
-		t.data[t.begin] = v
-		return nil
+		return 0, errors.New("empty")
 	}
-	t.begin--
-	if t.begin < 0 {
-		t.begin = t.capacity + t.begin
-	}
-	t.data[t.begin] = v
-	t.size++
-	return nil
+	t.size--
+	val := t.data[t.begin]
+	t.begin++
+	t.begin = t.begin % t.capacity
+	return val, nil
 }
 
 func (t *Deq) PopBack() (int, error) {
@@ -112,13 +114,15 @@ func (t *Deq) PopBack() (int, error) {
 	return val, nil
 }
 
-func (t *Deq) PopFront() (int, error) {
-	if t.size == 0 {
-		return 0, errors.New("empty")
+func (t *Deq) PushFront(v int) error {
+	if t.size+1 > t.capacity {
+		return errors.New("overflow")
 	}
-	t.size--
-	val := t.data[t.begin]
-	t.begin++
-	t.begin = t.begin % t.capacity
-	return val, nil
+	t.begin--
+	if t.begin < 0 {
+		t.begin = t.capacity + t.begin
+	}
+	t.data[t.begin] = v
+	t.size++
+	return nil
 }
