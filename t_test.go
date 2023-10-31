@@ -1,26 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"testing"
-	"time"
 )
 
-var m = make(map[int]int)
-
 func Test_Map(t *testing.T) {
-	go read()
-	go write()
-	time.Sleep(time.Second)
-}
+	ar := [10]int{}
 
-func read() {
-	for {
-		_, _ = m[1]
-	}
-}
+	ar2 := ar
 
-func write() {
-	for {
-		m[1] = 1
-	}
+	fmt.Println(ar2)
+	fmt.Println(ar)
+
+	fmt.Println(ar2 == ar)
+
 }

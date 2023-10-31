@@ -1,7 +1,6 @@
 package daily
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -95,16 +94,4 @@ func Test_CanGeneratePermutations(t *testing.T) {
 		assert.Equal(t, []int{1, 2, 3}, res)
 	})
 
-}
-
-func Test_prem(t *testing.T) {
-	res := perm([]int{1,2, 3})
-	fmt.Println(res)
-}
-
-func Test_TestLogPerm(t *testing.T) {
-	gen := NewPermGenerator([]int{1,2,3,4,5,6,7})
-	for gen.Next() {
-		fmt.Println(gen.Get())
-	}
 }
