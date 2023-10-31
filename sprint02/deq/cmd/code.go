@@ -78,14 +78,26 @@ func NewDeq(capacity int) *Deq {
 	}
 }
 
+func inc(v, mod int) int{
+	v++
+	return v %mod
+}
+
+func dec(v, mod int) int {
+	v--
+	if v < 0 {
+		v = mod+v
+	}
+	return v
+}
+
 func (t *Deq) PushBack(v int) error {
 	if t.size+1 > t.capacity {
 		return errors.New("overflow")
 	}
 	t.size++
 	t.data[t.end] = v
-	t.end++
-	t.end = t.end % t.capacity
+	t.end = inc(t.end, t.capacity)
 	return nil
 }
 
@@ -95,8 +107,7 @@ func (t *Deq) PopFront() (int, error) {
 	}
 	t.size--
 	val := t.data[t.begin]
-	t.begin++
-	t.begin = t.begin % t.capacity
+	t.begin = inc(t.begin, t.capacity)
 	return val, nil
 }
 
@@ -104,10 +115,7 @@ func (t *Deq) PopBack() (int, error) {
 	if t.size == 0 {
 		return 0, errors.New("empty")
 	}
-	t.end--
-	if t.end < 0 {
-		t.end = t.capacity + t.end
-	}
+	t.end = dec(t.end, t.capacity)
 	val := t.data[t.end]
 	t.size--
 
@@ -118,10 +126,7 @@ func (t *Deq) PushFront(v int) error {
 	if t.size+1 > t.capacity {
 		return errors.New("overflow")
 	}
-	t.begin--
-	if t.begin < 0 {
-		t.begin = t.capacity + t.begin
-	}
+	t.begin = dec(t.begin, t.capacity)
 	t.data[t.begin] = v
 	t.size++
 	return nil
