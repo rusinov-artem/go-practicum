@@ -3,21 +3,23 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Быстрая сортировка сделана без выделелния дополнительной
 // памяти при партицировании данный
-// Алгоритмическая сложность O(n*log(n)) в среднем и 
+// Алгоритмическая сложность O(n*log(n)) в среднем и
 // O(n^2) - в худшем случае, если данные уже отсортированны
-// 
+//
 // Дополнительная память выделяется на рекурсивных вызовах
 // в среднем O(log(n)) на рекурсинвые вызовы, и в худшем случае O(n)
 // на рекурсивные вызовы
 // + необходимо хранить все сортируемые объекты в памяти
-// Cоответственно оценка по памяти: 
+// Cоответственно оценка по памяти:
 // O(log(n) + n) -> O(n) в среднем
 // O(n + n) -> O(2n) в худшем случае
 
@@ -93,11 +95,8 @@ func qSortImpl(c *SortableIndex, begin, end int) {
 }
 
 func iRange(n int) []int {
-	r := make([]int, n)
-	for i := 0; i < n; i++ {
-		r[i] = i
-	}
-	return r
+	r := rand.New(rand.NewSource(time.Now().UnixMicro()))
+	return r.Perm(n)
 }
 
 func partition(c *SortableIndex, begin, end int) int {
@@ -109,7 +108,7 @@ func partition(c *SortableIndex, begin, end int) int {
 	right := end - 2
 	mid := end - 1
 
-	for {
+	for left <= right {
 		for !c.Less(mid, left) && left < mid {
 			left++
 		}
@@ -120,8 +119,6 @@ func partition(c *SortableIndex, begin, end int) int {
 
 		if left < right {
 			c.Swap(left, right)
-		} else {
-			break
 		}
 	}
 

@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/rusinov-artem/go-practicum/daily"
 	"github.com/stretchr/testify/assert"
@@ -25,6 +27,11 @@ func Test_CanSortIntegers(t *testing.T) {
 	for _, v := range c.Index {
 		fmt.Println(data[v])
 	}
+}
+
+func Test_Rnd(t *testing.T) {
+	r := rand.New(rand.NewSource(time.Now().UnixMicro()))
+	fmt.Println(r.Perm(3))
 }
 
 func Test_Part(t *testing.T) {
@@ -79,12 +86,11 @@ func Test_Part(t *testing.T) {
 }
 
 func Test_Brutoforse(t *testing.T) {
-	gen := daily.NewPermGenerator([]int{1, 2, 3,4,5})
+	gen := daily.NewPermGenerator([]int{1, 2, 3, 4, 5})
 	for gen.Next() {
 		inp := gen.Get()
 		fmt.Println(inp)
 		qs(inp, 0, len(inp))
-		assert.Equal(t, []int{1, 2, 3,4,5}, inp)
+		assert.Equal(t, []int{1, 2, 3, 4, 5}, inp)
 	}
 }
-
