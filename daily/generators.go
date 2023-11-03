@@ -5,9 +5,9 @@ type WordsGenerator struct {
 	state []int
 }
 
-func (this *WordsGenerator) Next() {
+func (this *WordsGenerator) Next() bool {
 	if len(this.alphabet)==0 {
-		return
+		return false
 	}
 	i := len(this.state)-1
 	for g := true; g && i>=0; {
@@ -19,6 +19,7 @@ func (this *WordsGenerator) Next() {
 			g = false
 		}
 	}
+	return i >=0
 }
 
 func (this *WordsGenerator) Get() []int {

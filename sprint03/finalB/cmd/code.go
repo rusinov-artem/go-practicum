@@ -108,17 +108,19 @@ func partition(c *SortableIndex, begin, end int) int {
 	right := end - 2
 	mid := end - 1
 
-	for left <= right {
+	for {
 		for !c.Less(mid, left) && left < mid {
 			left++
 		}
 
-		for c.Less(mid, right) && right > 0 {
+		for c.Less(mid, right) && right > begin {
 			right--
 		}
 
 		if left < right {
 			c.Swap(left, right)
+		} else {
+			break
 		}
 	}
 
