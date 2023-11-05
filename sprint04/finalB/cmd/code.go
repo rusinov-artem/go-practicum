@@ -9,14 +9,14 @@ import (
 	"strings"
 )
 
-// Хешмап. 
+// Хешмап.
 // Алгоритмическая сложность всех операций в среднем
 // O(1) При наполнении большим количеством элементов
 // количество колизий возрастает и сложность превращается
 // в O(n)
-// 
-// Для хранения элементов расходуется пропорциональное 
-// количество памяти, поэтому 
+//
+// Для хранения элементов расходуется пропорциональное
+// количество памяти, поэтому
 // сложность по памяти O(n)
 func main() {
 	sc := bufio.NewScanner(os.Stdin)
@@ -31,26 +31,22 @@ func main() {
 	for i := 0; i < n; i++ {
 		sc.Scan()
 		command := sc.Text()
+		sc.Scan()
+		key, _ := strconv.Atoi(sc.Text())
 		switch command {
 		case "get":
 			{
-				sc.Scan()
-				key, _ := strconv.Atoi(sc.Text())
 				val, err := hashMap.Get(key)
 				printResult(val, err, sb)
 			}
 		case "put":
 			{
 				sc.Scan()
-				key, _ := strconv.Atoi(sc.Text())
-				sc.Scan()
 				val, _ := strconv.Atoi(sc.Text())
 				hashMap.Put(key, val)
 			}
 		case "delete":
 			{
-				sc.Scan()
-				key, _ := strconv.Atoi(sc.Text())
 				val, err := hashMap.Delete(key)
 				printResult(val, err, sb)
 			}
@@ -78,11 +74,30 @@ type Element struct {
 	Value int
 }
 
+func (this Element) hasKey(key int) bool {
+	return this.Key == key
+}
+
 func NewElement(key, val int) *Element {
 	return &Element{
 		Next:  nil,
 		Key:   key,
 		Value: val,
+	}
+}
+
+func scan(head *Element, fn func(*Element) bool) *Element {
+	current := head
+	for {
+		if fn(current) {
+			return current
+		}
+
+		if current.Next == nil {
+			return nil
+		}
+
+		current = current.Next
 	}
 }
 
@@ -93,21 +108,19 @@ func (this *HashMap) Put(key, val int) {
 		return
 	}
 
-	current := this.storage[k]
-	for {
-		if current.Key == key {
-			current.Value = val
-			return
+	var last *Element
+	found := scan(this.storage[k], func(el *Element) bool {
+		last = el
+		if el.Key == key {
+			el.Value = val
+			return true
 		}
+		return false
+	})
 
-		if current.Next == nil {
-			break
-		}
-
-		current = current.Next
+	if found == nil {
+		last.Next = NewElement(key, val)
 	}
-
-	current.Next = NewElement(key, val)
 }
 
 func (this *HashMap) Get(key int) (int, error) {
@@ -116,48 +129,45 @@ func (this *HashMap) Get(key int) (int, error) {
 		return 0, errors.New("Not found")
 	}
 
-	current := this.storage[k]
-	for {
-		if current.Key == key {
-			return current.Value, nil
+	found := scan(this.storage[k], func(el *Element) bool {
+		if el.Key == key {
+			return true
 		}
+		return false
+	})
 
-		if current.Next == nil {
-			return 0, errors.New("Not found")
-		}
-
-		current = current.Next
+	if found != nil {
+		return found.Value, nil
 	}
+
+	return 0, errors.New("Not found")
 }
 
 func (this *HashMap) Delete(key int) (int, error) {
 	k := this.Hash(key)
-	head := this.storage[k]
-	element := this.storage[k]
-	if element == nil {
+	if this.storage[k] == nil {
 		return 0, errors.New("Not found")
 	}
 
-	var prev *Element
-	for {
-		if element.Key == key {
-			if element == head {
-				this.storage[k] = element.Next
-				return element.Value, nil
-			} else {
-				prev.Next = element.Next
-				return element.Value, nil
-			}
+	prev := this.storage[k]
+	found := scan(this.storage[k], func(el *Element) bool {
+		if el.Key == key {
+			return true
 		}
+		prev = el
+		return false
+	})
 
-		if element.Next == nil {
-			return 0, errors.New("Not found")
+	if found != nil {
+		if found == this.storage[k] && found.Next == nil {
+			this.storage[k] = nil
+		} else {
+			prev.Next = found.Next
 		}
-
-		prev = element
-		element = element.Next
+		return found.Value, nil
 	}
 
+	return 0, errors.New("Not found")
 }
 
 func NewHashMap() *HashMap {
