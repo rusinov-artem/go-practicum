@@ -4,9 +4,21 @@ echo $1
 
 mkdir -p "$1/cmd"
 
-touch "$1/cmd/code.go"
-touch "$1/cmd/code_test.go"
-touch "$1/cmd/inp.txt"
+codeFile="$1/cmd/code.go"
+testFile="$1/cmd/code_test.go"
+inpFile="$1/cmd/inp.txt"
+
+if ! [ -f ${codeFile} ]; then
+    touch "$codeFile"
+    echo -e "package main\n" > ${codeFile}
+fi
+
+if ! [ -f ${testFile} ]; then
+    touch "$testFile"
+    echo -e "package main\n" > ${testFile}
+fi
+
+touch ${inpFile}
 
 bdir=`basename $1 | sed 's/\./_/g'`
 
