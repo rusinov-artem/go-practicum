@@ -1,21 +1,41 @@
 #!/bin/bash
 
-echo $1
-
-mkdir -p "$1/cmd"
-
 codeFile="$1/cmd/code.go"
 testFile="$1/cmd/code_test.go"
 inpFile="$1/cmd/inp.txt"
 
+codeFileContent=$(
+cat << EOF
+package main
+
+EOF
+)
+
+testFileContent=$(
+cat << EOF
+package main
+
+ import (
+     "testing"
+
+    "github.com/stretchr/testify/assert"
+ )
+
+ func Test_(t *testing.T) {
+    assert.True(t, true) 
+ }
+EOF
+)
+
+mkdir -p "$1/cmd"
 if ! [ -f ${codeFile} ]; then
     touch "$codeFile"
-    echo -e "package main\n" > ${codeFile}
+    echo  "${codeFileContent}" > ${codeFile}
 fi
 
 if ! [ -f ${testFile} ]; then
     touch "$testFile"
-    echo -e "package main\n" > ${testFile}
+    echo "${testFileContent}" > ${testFile}
 fi
 
 touch ${inpFile}
