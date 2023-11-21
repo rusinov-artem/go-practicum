@@ -18,10 +18,10 @@ func Test_Fib(t *testing.T) {
 }
 
 func Test_Factorial(t *testing.T) {
-	assert.Equal(t, 1, factorial(1))
-	assert.Equal(t, 2, factorial(2))
-	assert.Equal(t, 6, factorial(3))
-	assert.Equal(t, 24, factorial(4))
+	assert.Equal(t, int64(1), factorial(1))
+	assert.Equal(t, int64(2), factorial(2))
+	assert.Equal(t, int64(6), factorial(3))
+	assert.Equal(t, int64(24), factorial(4))
 }
 
 func Test_Katalan(t *testing.T) {
