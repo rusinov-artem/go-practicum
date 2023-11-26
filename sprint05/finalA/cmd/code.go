@@ -8,6 +8,11 @@ import (
 	"strings"
 )
 
+// Алгоритм heap sort
+// Алгоритмическая сложность O(n*log(n))
+// Алгоритм использует дополнительную память на рекурсинвый вызовах, 
+// оценка дополнительной памяти O(log(n))
+// Корректность работы продемострирована тестами в соседнем файле
 func main() {
 	sc := bufio.NewScanner(os.Stdin)
 	sc.Split(bufio.ScanWords)
@@ -82,10 +87,10 @@ func iRange(n int) []int {
 
 func heapSort(sortable *SortableIndex) {
 	heapify(sortable)
-	popBackAll(sortable)
+	popSort(sortable)
 }
 
-func popBackAll(sortable *SortableIndex) {
+func popSort(sortable *SortableIndex) {
 	d := sortable.Index
 	end := len(d)
 
@@ -109,7 +114,6 @@ func heapify(sortable *SortableIndex) {
 func sDown(sortable *SortableIndex, idx, end int) int {
 	left := leftChild(idx)
 	right := rightChild(idx)
-	heap := sortable.Index
 
 	if left >= end {
 		return idx
@@ -121,61 +125,11 @@ func sDown(sortable *SortableIndex, idx, end int) int {
 	}
 
 	if sortable.Less(idx, maxChildIdx) {
-		swap(heap, idx, maxChildIdx)
+		sortable.Swap(idx, maxChildIdx)
 		return sDown(sortable, maxChildIdx, end)
 	}
 
 	return idx
-}
-
-func hSort(d []int) {
-	buildHeap(d)
-	popSort(d)
-}
-
-func buildHeap(d []int) {
-	if len(d) < 2 {
-		return
-	}
-
-	for i := parent(len(d) - 1); i >= 0; i-- {
-		down(d, i)
-	}
-}
-
-func down(heap []int, idx int) int {
-	left := leftChild(idx)
-	right := rightChild(idx)
-
-	if left >= len(heap) {
-		return idx
-	}
-
-	maxChildIdx := left
-	if right < len(heap) && heap[right] > heap[left] {
-		maxChildIdx = right
-	}
-
-	if heap[maxChildIdx] > heap[idx] {
-		swap(heap, idx, maxChildIdx)
-		return down(heap, maxChildIdx)
-	}
-
-	return idx
-}
-
-func swap(heap []int, l, r int) {
-	heap[l], heap[r] = heap[r], heap[l]
-}
-
-func popSort(d []int) {
-	end := len(d)
-
-	for end > 1 {
-		end--
-		swap(d, end, 0)
-		down(d[:end], 0)
-	}
 }
 
 func parent(idx int) int {

@@ -25,59 +25,87 @@ func Test_ParentChild(t *testing.T) {
 	assert.Equal(t, 6, rightChild(2))
 }
 
+func newSortableForInts(data []int) *SortableIndex {
+	sortable := &SortableIndex{Index: iRange(len(data))}
+	sortable.Less = func(i, j int) bool {
+		i = sortable.Index[i]
+		j = sortable.Index[j]
+		return data[i] < data[j]
+	}
+	return sortable
+}
+
+func extract(sortable *SortableIndex, data []int) []int {
+	result := make([]int, len(data))
+	for i := 0; i < len(data); i++ {
+		result[i] = data[sortable.Index[i]]
+	}
+	return result
+}
+
 func Test_CanBuildHeap(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
 		data := []int{}
-		buildHeap(data)
-		assert.Equal(t, []int{}, data)
+		sortable := newSortableForInts(data)
+		heapify(sortable)
+		assert.Equal(t, []int{}, extract(sortable, data))
 	})
 
 	t.Run("single element", func(t *testing.T) {
 		data := []int{1}
-		buildHeap(data)
-		assert.Equal(t, []int{1}, data)
+		sortable := newSortableForInts(data)
+		heapify(sortable)
+		assert.Equal(t, []int{1}, extract(sortable, data))
 	})
 	t.Run("two elements", func(t *testing.T) {
 		data := []int{1, 2}
-		buildHeap(data)
-		assert.Equal(t, []int{2, 1}, data)
+		sortable := newSortableForInts(data)
+		heapify(sortable)
+		assert.Equal(t, []int{2, 1}, extract(sortable, data))
 	})
 	t.Run("three elements", func(t *testing.T) {
 		data := []int{1, 2, 3}
-		buildHeap(data)
-		assert.Equal(t, []int{3, 2, 1}, data)
+		sortable := newSortableForInts(data)
+		heapify(sortable)
+		assert.Equal(t, []int{3, 2, 1}, extract(sortable, data))
 	})
 	t.Run("4 elements", func(t *testing.T) {
 		data := []int{1, 2, 3, 4}
-		buildHeap(data)
-		assert.Equal(t, []int{4, 2, 3, 1}, data)
+		sortable := newSortableForInts(data)
+		heapify(sortable)
+		assert.Equal(t, []int{4, 2, 3, 1}, extract(sortable, data))
 	})
 }
 
 func Test_PopSort(t *testing.T) {
-   t.Run("empty", func(t *testing.T){
-      heap := []int{} 
-      popSort(heap)
-      assert.Equal(t, []int{}, heap)
-   })
-   t.Run("1", func(t *testing.T){
-      heap := []int{1} 
-      popSort(heap)
-      assert.Equal(t, []int{1}, heap)
-   })
-   t.Run("2", func(t *testing.T){
-      heap := []int{2,1} 
-      popSort(heap)
-      assert.Equal(t, []int{1,2}, heap)
-   })
-   t.Run("3", func(t *testing.T){
-      heap := []int{3,2,1} 
-      popSort(heap)
-      assert.Equal(t, []int{1,2,3}, heap)
-   })
-   t.Run("4", func(t *testing.T){
-      heap := []int{4, 2, 3, 1} 
-      popSort(heap)
-      assert.Equal(t, []int{1,2,3,4}, heap)
-   })
+	t.Run("empty", func(t *testing.T) {
+		heap := []int{}
+		sortable := newSortableForInts(heap)
+		popSort(sortable)
+		assert.Equal(t, []int{}, extract(sortable, heap))
+	})
+	t.Run("1", func(t *testing.T) {
+		heap := []int{1}
+		sortable := newSortableForInts(heap)
+		popSort(sortable)
+		assert.Equal(t, []int{1}, extract(sortable, heap))
+	})
+	t.Run("2", func(t *testing.T) {
+		heap := []int{2, 1}
+		sortable := newSortableForInts(heap)
+		popSort(sortable)
+		assert.Equal(t, []int{1, 2}, extract(sortable, heap))
+	})
+	t.Run("3", func(t *testing.T) {
+		heap := []int{3, 2, 1}
+		sortable := newSortableForInts(heap)
+		popSort(sortable)
+		assert.Equal(t, []int{1, 2, 3}, extract(sortable, heap))
+	})
+	t.Run("4", func(t *testing.T) {
+		heap := []int{4, 2, 3, 1}
+		sortable := newSortableForInts(heap)
+		popSort(sortable)
+		assert.Equal(t, []int{1, 2, 3, 4}, extract(sortable, heap))
+	})
 }
