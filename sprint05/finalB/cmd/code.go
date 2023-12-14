@@ -6,66 +6,104 @@ type Node struct {
 	left  *Node
 	right *Node
 }
-// <template>
 
+// <template>
 
 // Алгоритм удленияя ключа из BST
 // Алгоритмическая сложность O(h) где h - высот дерева
-// Алгоритм расходует дополнительную память на 
-// рекурсинвых вызовах, поэтом сложность по памяти тоже 
-// O(h)
+// Алгоритм не расходует допольнительной памяти. Сложность
+// по памяти O(1)
 // Корректность алгоритма подтвержена тестами в соседнем файле
 func remove(node *Node, key int) *Node {
-	if node == nil {
-		return nil
-	}
+	root := node
+	var prev *Node
 
-	if node.value == key {
-		if node.left == nil && node.right == nil {
+	for {
+		if node == nil && root == nil {
 			return nil
 		}
 
-		if node.left != nil && node.right != nil {
-			left := node.left
-			right := node.right
-			node.left = nil
-			node.right = nil
-			insert(right, left)
-			return right
+		if node == nil {
+			return root
 		}
 
-		if node.left != nil {
+		if node.value == key {
+			if root == node {
+				right := root.right
+				left := root.left
+				root.left = nil
+				root.right = nil
+
+				if left == nil && right == nil {
+					return nil
+				}
+
+				if left != nil && right != nil {
+					root = right
+					insert(right, left)
+					return root
+				}
+
+				if right != nil {
+					return right
+				}
+				if left != nil {
+					return left
+				}
+			}
+
+			if node.left == nil && node.right == nil {
+				removeFrom(prev, node)
+				return root
+			}
+
 			left := node.left
-			node.left = nil
-			return left
-		} else {
 			right := node.right
+			node.left = nil
 			node.right = nil
-			return right
+			removeFrom(prev, node)
+			insert(prev, right)
+			insert(prev, left)
+			return root
+		}
+
+		prev = node
+		if node.value < key {
+			node = prev.right
+		} else {
+			node = prev.left
 		}
 	}
+}
 
-	if key < node.value {
-		node.left = remove(node.left, key)
-		return node
+func removeFrom(parent, child *Node) {
+	if parent.left == child {
+		parent.left = nil
 	} else {
-		node.right = remove(node.right, key)
-		return node
+		parent.right = nil
 	}
 }
 
 func insert(root, node *Node) {
-	if node.value < root.value {
-		if root.left == nil {
-			root.left = node
+	if node == nil {
+		return
+	}
+
+	for {
+		if node.value < root.value {
+			if root.left == nil {
+				root.left = node
+				return
+			} else {
+				root = root.left
+			}
 		} else {
-			insert(root.left, node)
-		}
-	} else {
-		if root.right == nil {
-			root.right = node
-		} else {
-			insert(root.right, node)
+			if root.right == nil {
+				root.right = node
+				return
+			} else {
+				root = root.right
+			}
 		}
 	}
 }
