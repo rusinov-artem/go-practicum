@@ -43,7 +43,7 @@ func Test_CanShiftDown(t *testing.T) {
 		heap := []int{0, 5, 4, 30}
 		r := up(heap, 3)
 		assert.Equal(t, 1, r)
-		assert.Equal(t, []int{0, 30, 4, 30}, heap)
+		assert.Equal(t, []int{0, 30, 4, 5}, heap)
 	})
 	t.Run("three elements heap 2", func(t *testing.T) {
 		heap := []int{0, 6, 4, 5}
